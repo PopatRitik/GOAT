@@ -88,7 +88,7 @@ export default function UpdatePage() {
         align={"center"}
         justify={"center"}
         minHeight="100vh"
-        bgGradient="linear(to-br, navy, blue.900, indigo.900)"
+        bg="indigo.900"
       >
         <Box
           w={"full"}
@@ -154,7 +154,7 @@ export default function UpdatePage() {
               </FormControl>
             ))}
             <Stack spacing={6} direction={["column", "row"]}>
-              <Link as={RouterLink} color={'blue.400'} _hover={{ color: "blue.300" }} to='/d'>
+              <Link as={RouterLink} color={'blue.400'} _hover={{ color: "blue.300" }} to={`/${user.username}`}>
                 <Button
                   bg={"red.600"}
                   color={"white"}

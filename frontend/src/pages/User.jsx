@@ -47,7 +47,7 @@ export default function UserPage() {
       width="full"
       align="center"
       justifyContent="center"
-      bgGradient="linear(to-br, navy, blue.900, indigo.900)"
+      bg="indigo.900"
     >
       <Container maxW="lg" py={12} px={6}>
         <Box

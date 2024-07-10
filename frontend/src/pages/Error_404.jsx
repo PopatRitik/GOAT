@@ -20,7 +20,7 @@ export default function Error_404() {
       width="full"
       align="center"
       justifyContent="center"
-      bgGradient="linear(to-br, navy, blue.900, indigo.900)"
+      bg="indigo.900"
     >
       <Container maxW="lg" textAlign="center">
         <VStack spacing={8}>
