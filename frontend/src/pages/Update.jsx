@@ -156,28 +156,20 @@ export default function UpdatePage() {
             <Stack spacing={6} direction={["column", "row"]}>
               <Link as={RouterLink} color={'blue.400'} _hover={{ color: "blue.300" }} to={`/${user.username}`}>
                 <Button
-                  bg={"red.600"}
-                  color={"white"}
                   w='full'
-                  _hover={{
-                    bg: "red.500",
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 4px 20px rgba(255,100,100,0.4)'
-                  }}
+                  bgGradient="linear(to-r, red.800, #800000)"
+                  color="white"
+                  _hover={{ bgGradient: "linear(to-r, red.500, red.800)" }}
                   transition="all 0.3s ease"
                 >
                   Cancel
                 </Button>
               </Link>
               <Button
-                bgGradient="linear(to-r, green.600, teal.600)"
-                color={"white"}
                 w='full'
-                _hover={{
-                  bgGradient: "linear(to-r, green.500, teal.500)",
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 4px 20px rgba(0,255,200,0.4)'
-                }}
+                bgGradient="linear(to-r, green.400, teal.500)"
+                color="white"
+                _hover={{ bgGradient: "linear(to-r, green.500, teal.600)" }}
                 type='submit'
                 isLoading={updating}
                 transition="all 0.3s ease"

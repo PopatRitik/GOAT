@@ -3,7 +3,7 @@ import {
   Box, Flex, Input, IconButton, Button, VStack, HStack, Text, Link,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton,
   useDisclosure, Table, Thead, Tbody, Tr, Th, Td, Textarea, Container, useToast,
-  Spacer
+  Spacer, Spinner
 } from '@chakra-ui/react';
 import { FaUser, FaPlus, FaRandom, FaTrash, FaEdit, FaExternalLinkAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
@@ -26,11 +26,19 @@ export default function Questions() {
   const userParam = useParams();
   const [currentQuestion, setCurrentQuestion] = useState({ name: '', link: '' });
 
+  // New loading states
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAdding, setIsAdding] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdatingNotes, setIsUpdatingNotes] = useState(false);
+  const [isGeneratingNotes, setIsGeneratingNotes] = useState(false);
+
   useEffect(() => {
     fetchQuestions();
   }, [user]);
 
   const fetchQuestions = async () => {
+    setIsLoading(true);
     try {
       const res = await fetch(`/api/questions/user/${userParam.username}`);
       const data = await res.json();
@@ -47,10 +55,13 @@ export default function Questions() {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleAddQuestion = async () => {
+    setIsAdding(true);
     try {
       const res = await fetch("/api/questions/create", {
         method: "POST",
@@ -82,10 +93,13 @@ export default function Questions() {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsAdding(false);
     }
   };
 
   const handleDeleteQuestion = async (id) => {
+    setIsDeleting(true);
     try {
       const res = await fetch(`/api/questions/${id}`, {
         method: "DELETE",
@@ -111,10 +125,13 @@ export default function Questions() {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
   const handleUpdateNotes = async () => {
+    setIsUpdatingNotes(true);
     try {
       const res = await fetch(`/api/questions/note/${currentNotes.id}`, {
         method: "PUT",
@@ -145,6 +162,8 @@ export default function Questions() {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsUpdatingNotes(false);
     }
   };
 
@@ -165,6 +184,7 @@ export default function Questions() {
   };
 
   const handleGenerateNotes = async () => {
+    setIsGeneratingNotes(true);
     try {
       if (!currentQuestion) {
         toast({
@@ -184,7 +204,7 @@ export default function Questions() {
         },
         body: JSON.stringify({ name: currentQuestion.name, link: currentQuestion.link }),
       });
-      
+
       const data = await res.json();
 
       if (res.ok) {
@@ -207,6 +227,8 @@ export default function Questions() {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsGeneratingNotes(false);
     }
   };
 
@@ -271,65 +293,72 @@ export default function Questions() {
           overflow="hidden"
           boxShadow="0 4px 6px rgba(0,0,0,0.1)"
         >
-          <Table variant="simple">
-            <Thead bg="rgba(0,0,0,0.2)">
-              <Tr>
-                <Th color="cyan.100">Name</Th>
-                <Th color="cyan.100">Link</Th>
-                {user.username === userParam.username && <Th color="cyan.100">Notes</Th>}
-                {user.username === userParam.username && <Th color="cyan.100">Actions</Th>}
-              </Tr>
-            </Thead>
-            <Tbody>
-              {questions.filter(q => q.name.toLowerCase().includes(searchTerm.toLowerCase())).map((question) => (
-                <Tr key={question._id} _hover={{ bg: "rgba(255,255,255,0.05)" }}>
-                  <Td color="white">{truncateName(question.name)}</Td>
-                  <Td>
-                    <Link href={question.link} isExternal color="blue.300" fontWeight="semibold">
-                      <HStack>
-                        <Text>View Question</Text>
-                        <FaExternalLinkAlt size="12px" />
-                      </HStack>
-                    </Link>
-                  </Td>
-                  {user.username === userParam.username && (
-                    <Td>
-                      <IconButton
-                        icon={<FaEdit />}
-                        size="sm"
-                        onClick={() => {
-                          setCurrentQuestion({name: question.name, link: question.link});
-                          setCurrentNotes({ id: question._id, notes: question.notes });
-                          onNotesOpen();
-                        }}
-                        colorScheme="yellow"
-                        variant="ghost"
-                        aria-label="Edit notes"
-                      />
-                    </Td>
-                  )}
-                  {user.username === userParam.username && (
-                    <Td>
-                      <IconButton
-                        icon={<FaTrash />}
-                        size="sm"
-                        onClick={() => handleDeleteQuestion(question._id)}
-                        colorScheme="red"
-                        variant="ghost"
-                        aria-label="Delete question"
-                      />
-                    </Td>
-                  )}
+          {isLoading ? (
+            <Flex justify="center" align="center" height="200px">
+              <Spinner size="xl" color="cyan.500" />
+            </Flex>
+          ) : (
+            <Table variant="simple">
+              <Thead bg="rgba(0,0,0,0.2)">
+                <Tr>
+                  <Th color="cyan.100">Name</Th>
+                  <Th color="cyan.100">Link</Th>
+                  {user.username === userParam.username && <Th color="cyan.100">Notes</Th>}
+                  {user.username === userParam.username && <Th color="cyan.100">Actions</Th>}
                 </Tr>
-              ))}
-            </Tbody>
-          </Table>
+              </Thead>
+              <Tbody>
+                {questions.filter(q => q.name.toLowerCase().includes(searchTerm.toLowerCase())).map((question) => (
+                  <Tr key={question._id} _hover={{ bg: "rgba(255,255,255,0.05)" }}>
+                    <Td color="white">{truncateName(question.name)}</Td>
+                    <Td>
+                      <Link href={question.link} isExternal color="blue.300" fontWeight="semibold">
+                        <HStack>
+                          <Text>View Question</Text>
+                          <FaExternalLinkAlt size="12px" />
+                        </HStack>
+                      </Link>
+                    </Td>
+                    {user.username === userParam.username && (
+                      <Td>
+                        <IconButton
+                          icon={<FaEdit />}
+                          size="sm"
+                          onClick={() => {
+                            setCurrentQuestion({ name: question.name, link: question.link });
+                            setCurrentNotes({ id: question._id, notes: question.notes });
+                            onNotesOpen();
+                          }}
+                          colorScheme="yellow"
+                          variant="ghost"
+                          aria-label="Edit notes"
+                        />
+                      </Td>
+                    )}
+                    {user.username === userParam.username && (
+                      <Td>
+                        <IconButton
+                          icon={isDeleting ? <Spinner size="sm" /> : <FaTrash />}
+                          size="sm"
+                          onClick={() => handleDeleteQuestion(question._id)}
+                          colorScheme="red"
+                          variant="ghost"
+                          aria-label="Delete question"
+                          isLoading={isDeleting}
+                        />
+                      </Td>
+                    )}
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          )}
         </Box>
 
         {/* Add Question Modal */}
-        <Modal bg="rgba(0,0,30,0.7)" isOpen={isAddOpen} onClose={onAddClose}>
+        <Modal isOpen={isAddOpen} onClose={onAddClose}>
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent style={{ background: '#141e30' }}>
             <ModalHeader>Add New Question</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
@@ -347,7 +376,13 @@ export default function Questions() {
               </VStack>
             </ModalBody>
             <ModalFooter>
-              <Button onClick={handleAddQuestion} bgGradient="linear(to-r, green.400, teal.500)" color="white">
+              <Button
+                onClick={handleAddQuestion}
+                bgGradient="linear(to-r, green.400, teal.500)"
+                color="white"
+                isLoading={isAdding}
+                loadingText="Adding..."
+              >
                 Add Question
               </Button>
               <Button ml={3} onClick={onAddClose}>
@@ -358,9 +393,9 @@ export default function Questions() {
         </Modal>
 
         {/* Notes Modal */}
-        <Modal bg="rgba(0,0,30,0.7)" isOpen={isNotesOpen} onClose={onNotesClose}>
+        <Modal isOpen={isNotesOpen} onClose={onNotesClose}>
           <ModalOverlay />
-          <ModalContent>
+          <ModalContent style={{ background: '#141e30' }}>
             <ModalHeader>Edit Notes</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
@@ -371,11 +406,23 @@ export default function Questions() {
               />
             </ModalBody>
             <ModalFooter>
-              <Button onClick={handleGenerateNotes} bgGradient="linear(to-r, green.400, teal.500)" color="white">
+              <Button
+                onClick={handleGenerateNotes}
+                bgGradient="linear(to-r, green.400, teal.500)"
+                color="white"
+                isLoading={isGeneratingNotes}
+                loadingText="Generating..."
+              >
                 <SiGooglegemini />
               </Button>
               <Spacer></Spacer>
-              <Button onClick={handleUpdateNotes} bgGradient="linear(to-r, green.400, teal.500)" color="white">
+              <Button
+                onClick={handleUpdateNotes}
+                bgGradient="linear(to-r, green.400, teal.500)"
+                color="white"
+                isLoading={isUpdatingNotes}
+                loadingText="Saving..."
+              >
                 Save Notes
               </Button>
               <Button ml={3} onClick={onNotesClose}>
