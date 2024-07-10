@@ -8,10 +8,13 @@ import userRoutes from "./routes/userRoutes.js";
 import questionRoutes from "./routes/questionRoutes.js";
 import bodyParser from 'body-parser';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import job from './cron/cron.js';
 
 dotenv.config();
 
 connectDB();
+
+job.start();
 
 const app = express();
 
