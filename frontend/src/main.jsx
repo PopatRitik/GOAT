@@ -6,6 +6,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { BrowserRouter } from "react-router-dom";
 import { RecoilRoot } from 'recoil';
 import { extendTheme } from "@chakra-ui/theme-utils";
+import './index.css'
 
 const styles = {
   global: {
