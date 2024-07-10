@@ -58,7 +58,7 @@ export default function Login() {
       align={'center'}
       justify={'center'}
       minHeight="100vh"
-      bg="indigo.900"
+      style={{ backgroundColor: 'indigo' }}
     >
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>
