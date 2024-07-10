@@ -15,7 +15,6 @@ const questionsSchema = mongoose.Schema(
 		},
 		notes: {
 			type: String,
-			maxLength: 500,
 		},
 	},
 	{

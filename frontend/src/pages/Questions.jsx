@@ -327,7 +327,7 @@ export default function Questions() {
         </Box>
 
         {/* Add Question Modal */}
-        <Modal isOpen={isAddOpen} onClose={onAddClose}>
+        <Modal bg="rgba(0,0,30,0.7)" isOpen={isAddOpen} onClose={onAddClose}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Add New Question</ModalHeader>
@@ -358,7 +358,7 @@ export default function Questions() {
         </Modal>
 
         {/* Notes Modal */}
-        <Modal isOpen={isNotesOpen} onClose={onNotesClose}>
+        <Modal bg="rgba(0,0,30,0.7)" isOpen={isNotesOpen} onClose={onNotesClose}>
           <ModalOverlay />
           <ModalContent>
             <ModalHeader>Edit Notes</ModalHeader>
