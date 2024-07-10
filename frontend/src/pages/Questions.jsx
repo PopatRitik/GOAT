@@ -215,7 +215,7 @@ export default function Questions() {
   };
 
   return (
-    <Box minHeight="100vh" bg="indigo.900" py={5}>
+    <Box minHeight="100vh" style={{ background: 'linear-gradient(to right, #141e30, #243b55)' }} py={5}>
       <Container maxW="container.xl">
         <Flex justifyContent="space-between" alignItems="center" mb={8}>
           <HStack spacing={4}>

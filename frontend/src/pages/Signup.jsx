@@ -58,7 +58,7 @@ export default function Signup() {
       align={'center'}
       justify={'center'}
       minHeight="100vh"
-      bg="indigo.900"
+      style={{ background: 'linear-gradient(to right, #141e30, #243b55)' }}
     >
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'center'}>

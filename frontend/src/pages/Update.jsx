@@ -88,7 +88,7 @@ export default function UpdatePage() {
         align={"center"}
         justify={"center"}
         minHeight="100vh"
-        bg="indigo.900"
+        style={{ background: 'linear-gradient(to right, #141e30, #243b55)' }}
       >
         <Box
           w={"full"}

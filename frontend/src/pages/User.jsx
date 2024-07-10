@@ -47,7 +47,7 @@ export default function UserPage() {
       width="full"
       align="center"
       justifyContent="center"
-      bg="indigo.900"
+      style={{ background: 'linear-gradient(to right, #141e30, #243b55)' }}
     >
       <Container maxW="lg" py={12} px={6}>
         <Box

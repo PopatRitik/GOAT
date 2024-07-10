@@ -6,7 +6,7 @@ const Landing = () => {
   return (
     <Box
       height="100vh"
-      bg="indigo.900"
+      style={{ background: 'linear-gradient(to right, #141e30, #243b55)' }}
       display="flex"
       flexDirection="column"
       justifyContent="center"
