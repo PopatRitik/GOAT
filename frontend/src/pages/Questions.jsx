@@ -29,7 +29,6 @@ export default function Questions() {
   // New loading states
   const [isLoading, setIsLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [isUpdatingNotes, setIsUpdatingNotes] = useState(false);
   const [isGeneratingNotes, setIsGeneratingNotes] = useState(false);
 
@@ -99,7 +98,6 @@ export default function Questions() {
   };
 
   const handleDeleteQuestion = async (id) => {
-    setIsDeleting(true);
     try {
       const res = await fetch(`/api/questions/${id}`, {
         method: "DELETE",
@@ -125,8 +123,6 @@ export default function Questions() {
         duration: 3000,
         isClosable: true,
       });
-    } finally {
-      setIsDeleting(false);
     }
   };
 
@@ -298,20 +294,20 @@ export default function Questions() {
               <Spinner size="xl" color="cyan.500" />
             </Flex>
           ) : (
-            <Table variant="simple">
-              <Thead bg="rgba(0,0,0,0.2)">
+            <Table variant="simple" sx={{ borderColor: 'transparent' }}>
+              <Thead bg="rgba(0,0,0,0.2)" sx={{ borderColor: 'transparent' }}>
                 <Tr>
-                  <Th color="cyan.100">Name</Th>
-                  <Th color="cyan.100">Link</Th>
-                  {user.username === userParam.username && <Th color="cyan.100">Notes</Th>}
-                  {user.username === userParam.username && <Th color="cyan.100">Actions</Th>}
+                  <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Name</Th>
+                  <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Link</Th>
+                  {user.username === userParam.username && <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Notes</Th>}
+                  {user.username === userParam.username && <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Actions</Th>}
                 </Tr>
               </Thead>
-              <Tbody>
+              <Tbody sx={{ borderColor: 'transparent' }}>
                 {questions.filter(q => q.name.toLowerCase().includes(searchTerm.toLowerCase())).map((question) => (
-                  <Tr key={question._id} _hover={{ bg: "rgba(255,255,255,0.05)" }}>
-                    <Td color="white">{truncateName(question.name)}</Td>
-                    <Td>
+                  <Tr key={question._id} _hover={{ bg: "rgba(255,255,255,0.05)" }} sx={{ borderColor: 'transparent' }}>
+                    <Td color="white" sx={{ borderColor: 'transparent' }}>{truncateName(question.name)}</Td>
+                    <Td sx={{ borderColor: 'transparent' }}>
                       <Link href={question.link} isExternal color="blue.300" fontWeight="semibold">
                         <HStack>
                           <Text>View Question</Text>
@@ -320,7 +316,7 @@ export default function Questions() {
                       </Link>
                     </Td>
                     {user.username === userParam.username && (
-                      <Td>
+                      <Td sx={{ borderColor: 'transparent' }}>
                         <IconButton
                           icon={<FaEdit />}
                           size="sm"
@@ -332,19 +328,20 @@ export default function Questions() {
                           colorScheme="yellow"
                           variant="ghost"
                           aria-label="Edit notes"
+                          sx={{ borderColor: 'transparent' }}
                         />
                       </Td>
                     )}
                     {user.username === userParam.username && (
-                      <Td>
+                      <Td sx={{ borderColor: 'transparent' }}>
                         <IconButton
-                          icon={isDeleting ? <Spinner size="sm" /> : <FaTrash />}
+                          icon={<FaTrash />}
                           size="sm"
                           onClick={() => handleDeleteQuestion(question._id)}
                           colorScheme="red"
                           variant="ghost"
                           aria-label="Delete question"
-                          isLoading={isDeleting}
+                          sx={{ borderColor: 'transparent' }}
                         />
                       </Td>
                     )}
@@ -352,6 +349,7 @@ export default function Questions() {
                 ))}
               </Tbody>
             </Table>
+
           )}
         </Box>
 
@@ -359,7 +357,7 @@ export default function Questions() {
         <Modal isOpen={isAddOpen} onClose={onAddClose}>
           <ModalOverlay />
           <ModalContent style={{ background: '#141e30' }}>
-            <ModalHeader>Add New Question</ModalHeader>
+            <ModalHeader color={"white"}>Add New Question</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <VStack spacing={4}>
@@ -367,11 +365,13 @@ export default function Questions() {
                   placeholder="Question Name"
                   value={newQuestion.name}
                   onChange={(e) => setNewQuestion({ ...newQuestion, name: e.target.value })}
+                  color={"white"}
                 />
                 <Input
                   placeholder="Question Link"
                   value={newQuestion.link}
                   onChange={(e) => setNewQuestion({ ...newQuestion, link: e.target.value })}
+                  color={"white"}
                 />
               </VStack>
             </ModalBody>
@@ -382,10 +382,11 @@ export default function Questions() {
                 color="white"
                 isLoading={isAdding}
                 loadingText="Adding..."
+                _hover={{ bg: "gray.500" }}
               >
                 Add Question
               </Button>
-              <Button ml={3} onClick={onAddClose}>
+              <Button ml={3} onClick={onAddClose} bg={"#141e30"} _hover={{ bg: "gray.500" }} color={"white"}>
                 Cancel
               </Button>
             </ModalFooter>
@@ -396,13 +397,14 @@ export default function Questions() {
         <Modal isOpen={isNotesOpen} onClose={onNotesClose}>
           <ModalOverlay />
           <ModalContent style={{ background: '#141e30' }}>
-            <ModalHeader>Edit Notes</ModalHeader>
+            <ModalHeader color={"white"}>Edit Notes</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Textarea
                 value={currentNotes.notes}
                 onChange={(e) => setCurrentNotes({ ...currentNotes, notes: e.target.value })}
                 placeholder="Enter notes..."
+                color={"white"}
               />
             </ModalBody>
             <ModalFooter>
@@ -412,6 +414,7 @@ export default function Questions() {
                 color="white"
                 isLoading={isGeneratingNotes}
                 loadingText="Generating..."
+                _hover={{ bg: "gray.500" }}
               >
                 <SiGooglegemini />
               </Button>
@@ -422,10 +425,11 @@ export default function Questions() {
                 color="white"
                 isLoading={isUpdatingNotes}
                 loadingText="Saving..."
+                _hover={{ bg: "gray.500" }}
               >
                 Save Notes
               </Button>
-              <Button ml={3} onClick={onNotesClose}>
+              <Button ml={3} onClick={onNotesClose} bg={"#141e30"} _hover={{ bg: "gray.500" }} color={"white"}>
                 Cancel
               </Button>
             </ModalFooter>
