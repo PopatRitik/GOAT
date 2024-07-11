@@ -3,7 +3,7 @@ import {
   Box, Flex, Input, IconButton, Button, VStack, HStack, Text, Link,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton,
   useDisclosure, Table, Thead, Tbody, Tr, Th, Td, Textarea, Container, useToast,
-  Spacer, Spinner
+  Spacer, Spinner, useBreakpointValue
 } from '@chakra-ui/react';
 import { FaUser, FaPlus, FaRandom, FaTrash, FaEdit, FaExternalLinkAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +31,8 @@ export default function Questions() {
   const [isAdding, setIsAdding] = useState(false);
   const [isUpdatingNotes, setIsUpdatingNotes] = useState(false);
   const [isGeneratingNotes, setIsGeneratingNotes] = useState(false);
+
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   useEffect(() => {
     fetchQuestions();
@@ -232,126 +234,134 @@ export default function Questions() {
     return name.length > 20 ? name.slice(0, 20) + '...' : name;
   };
 
+
   return (
     <Box minHeight="100vh" style={{ background: 'linear-gradient(to right, #141e30, #243b55)' }} py={5}>
       <Container maxW="container.xl">
-        <Flex justifyContent="space-between" alignItems="center" mb={8}>
-          <HStack spacing={4}>
-            {user.username === userParam.username && (
+        <VStack spacing={4} align="stretch">
+          <Flex direction={isMobile ? "column" : "row"} justifyContent="space-between" alignItems="center" mb={8}>
+            <HStack spacing={4} mb={isMobile ? 4 : 0}>
+              {user.username === userParam.username && (
+                <Button
+                  leftIcon={<FaPlus />}
+                  onClick={onAddOpen}
+                  bgGradient="linear(to-r, green.400, teal.500)"
+                  color="white"
+                  _hover={{ bgGradient: "linear(to-r, green.500, teal.600)" }}
+                  size={isMobile ? "sm" : "md"}
+                >
+                  Add
+                </Button>
+              )}
               <Button
-                leftIcon={<FaPlus />}
-                onClick={onAddOpen}
-                bgGradient="linear(to-r, green.400, teal.500)"
+                leftIcon={<FaRandom />}
+                onClick={handlePickRandom}
+                bgGradient="linear(to-r, purple.400, pink.500)"
                 color="white"
-                _hover={{ bgGradient: "linear(to-r, green.500, teal.600)" }}
+                _hover={{ bgGradient: "linear(to-r, purple.500, pink.600)" }}
+                size={isMobile ? "sm" : "md"}
               >
-                Add
+                Pick Random
               </Button>
-            )}
-            <Button
-              leftIcon={<FaRandom />}
-              onClick={handlePickRandom}
-              bgGradient="linear(to-r, purple.400, pink.500)"
+            </HStack>
+            <Input
+              placeholder="Search questions..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              width={isMobile ? "100%" : "40%"}
+              bg="rgba(255,255,255,0.1)"
               color="white"
-              _hover={{ bgGradient: "linear(to-r, purple.500, pink.600)" }}
-            >
-              Pick Random
-            </Button>
-          </HStack>
-          <Input
-            placeholder="Search questions..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            width="40%"
-            bg="rgba(255,255,255,0.1)"
-            color="white"
-            _placeholder={{ color: "gray.300" }}
-            borderColor="transparent"
-            _hover={{ borderColor: "blue.300" }}
-            _focus={{ borderColor: "blue.300", boxShadow: "0 0 0 1px #63B3ED" }}
-          />
-          {user.username === userParam.username && (
-            <Link as={RouterLink} to={`/${user.username}`}>
-              <IconButton
-                icon={<FaUser />}
-                bgGradient="linear(to-r, cyan.400, blue.500)"
-                color="white"
-                _hover={{ bgGradient: "linear(to-r, cyan.500, blue.600)" }}
-                aria-label="User profile"
-              />
-            </Link>
-          )}
-        </Flex>
+              _placeholder={{ color: "gray.300" }}
+              borderColor="transparent"
+              _hover={{ borderColor: "blue.300" }}
+              _focus={{ borderColor: "blue.300", boxShadow: "0 0 0 1px #63B3ED" }}
+              mb={isMobile ? 4 : 0}
+            />
+            {user.username === userParam.username && (
+              <Link as={RouterLink} to={`/${user.username}`}>
+                <IconButton
+                  icon={<FaUser />}
+                  bgGradient="linear(to-r, cyan.400, blue.500)"
+                  color="white"
+                  _hover={{ bgGradient: "linear(to-r, cyan.500, blue.600)" }}
+                  aria-label="User profile"
+                  size={isMobile ? "sm" : "md"}
+                />
+              </Link>
+            )}
+          </Flex>
 
-        <Box
-          bg="rgba(255,255,255,0.05)"
-          rounded="lg"
-          overflow="hidden"
-          boxShadow="0 4px 6px rgba(0,0,0,0.1)"
-        >
-          {isLoading ? (
-            <Flex justify="center" align="center" height="200px">
-              <Spinner size="xl" color="cyan.500" />
-            </Flex>
-          ) : (
-            <Table variant="simple" sx={{ borderColor: 'transparent' }}>
-              <Thead bg="rgba(0,0,0,0.2)" sx={{ borderColor: 'transparent' }}>
-                <Tr>
-                  <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Name</Th>
-                  <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Link</Th>
-                  {user.username === userParam.username && <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Notes</Th>}
-                  {user.username === userParam.username && <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Actions</Th>}
-                </Tr>
-              </Thead>
-              <Tbody sx={{ borderColor: 'transparent' }}>
-                {questions.filter(q => q.name.toLowerCase().includes(searchTerm.toLowerCase())).map((question) => (
-                  <Tr key={question._id} _hover={{ bg: "rgba(255,255,255,0.05)" }} sx={{ borderColor: 'transparent' }}>
-                    <Td color="white" sx={{ borderColor: 'transparent' }}>{truncateName(question.name)}</Td>
-                    <Td sx={{ borderColor: 'transparent' }}>
-                      <Link href={question.link} isExternal color="blue.300" fontWeight="semibold">
-                        <HStack>
-                          <Text>View Question</Text>
-                          <FaExternalLinkAlt size="12px" />
-                        </HStack>
-                      </Link>
-                    </Td>
-                    {user.username === userParam.username && (
-                      <Td sx={{ borderColor: 'transparent' }}>
-                        <IconButton
-                          icon={<FaEdit />}
-                          size="sm"
-                          onClick={() => {
-                            setCurrentQuestion({ name: question.name, link: question.link });
-                            setCurrentNotes({ id: question._id, notes: question.notes });
-                            onNotesOpen();
-                          }}
-                          colorScheme="yellow"
-                          variant="ghost"
-                          aria-label="Edit notes"
-                          sx={{ borderColor: 'transparent' }}
-                        />
-                      </Td>
-                    )}
-                    {user.username === userParam.username && (
-                      <Td sx={{ borderColor: 'transparent' }}>
-                        <IconButton
-                          icon={<FaTrash />}
-                          size="sm"
-                          onClick={() => handleDeleteQuestion(question._id)}
-                          colorScheme="red"
-                          variant="ghost"
-                          aria-label="Delete question"
-                          sx={{ borderColor: 'transparent' }}
-                        />
-                      </Td>
-                    )}
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-
-          )}
-        </Box>
+          <Box
+            bg="rgba(255,255,255,0.05)"
+            rounded="lg"
+            overflow="hidden"
+            boxShadow="0 4px 6px rgba(0,0,0,0.1)"
+          >
+            {isLoading ? (
+              <Flex justify="center" align="center" height="200px">
+                <Spinner size="xl" color="cyan.500" />
+              </Flex>
+            ) : (
+              <Box overflowX="auto">
+                <Table variant="simple" sx={{ borderColor: 'transparent' }}>
+                  <Thead bg="rgba(0,0,0,0.2)" sx={{ borderColor: 'transparent' }}>
+                    <Tr>
+                      <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Name</Th>
+                      <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Link</Th>
+                      {user.username === userParam.username && <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Notes</Th>}
+                      {user.username === userParam.username && <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Actions</Th>}
+                    </Tr>
+                  </Thead>
+                  <Tbody sx={{ borderColor: 'transparent' }}>
+                    {questions.filter(q => q.name.toLowerCase().includes(searchTerm.toLowerCase())).map((question) => (
+                      <Tr key={question._id} _hover={{ bg: "rgba(255,255,255,0.05)" }} sx={{ borderColor: 'transparent' }}>
+                        <Td color="white" sx={{ borderColor: 'transparent' }}>{truncateName(question.name)}</Td>
+                        <Td sx={{ borderColor: 'transparent' }}>
+                          <Link href={question.link} isExternal color="blue.300" fontWeight="semibold">
+                            <HStack>
+                              <Text>View Question</Text>
+                              <FaExternalLinkAlt size="12px" />
+                            </HStack>
+                          </Link>
+                        </Td>
+                        {user.username === userParam.username && (
+                          <Td sx={{ borderColor: 'transparent' }}>
+                            <IconButton
+                              icon={<FaEdit />}
+                              size="sm"
+                              onClick={() => {
+                                setCurrentQuestion({ name: question.name, link: question.link });
+                                setCurrentNotes({ id: question._id, notes: question.notes });
+                                onNotesOpen();
+                              }}
+                              colorScheme="yellow"
+                              variant="ghost"
+                              aria-label="Edit notes"
+                              sx={{ borderColor: 'transparent' }}
+                            />
+                          </Td>
+                        )}
+                        {user.username === userParam.username && (
+                          <Td sx={{ borderColor: 'transparent' }}>
+                            <IconButton
+                              icon={<FaTrash />}
+                              size="sm"
+                              onClick={() => handleDeleteQuestion(question._id)}
+                              colorScheme="red"
+                              variant="ghost"
+                              aria-label="Delete question"
+                              sx={{ borderColor: 'transparent' }}
+                            />
+                          </Td>
+                        )}
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </Box>
+            )}
+          </Box>
+        </VStack>
 
         {/* Add Question Modal */}
         <Modal isOpen={isAddOpen} onClose={onAddClose}>
