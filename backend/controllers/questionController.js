@@ -23,9 +23,9 @@ const createQuestion = async (req, res) => {
           }
 
           const newQuestion = new Questions({ questionseBy, name, link, questionTag });
-		await newQuestion.save();
+          await newQuestion.save();
 
-		res.status(201).json(newQuestion);
+          res.status(201).json(newQuestion);
 
      } catch (error) {
           res.status(500).json({ error: error.message });
@@ -34,94 +34,92 @@ const createQuestion = async (req, res) => {
 
 
 const deleteQuestion = async (req, res) => {
-	try {
-		const question = await Questions.findById(req.params.id);
-		if (!question) {
-			return res.status(404).json({ error: "Question not found" });
-		}
+     try {
+          const question = await Questions.findById(req.params.id);
+          if (!question) {
+               return res.status(404).json({ error: "Question not found" });
+          }
 
-		if (question.questionseBy.toString() !== req.user._id.toString()) {
-			return res.status(401).json({ error: "Unauthorized to delete question" });
-		}
+          if (question.questionseBy.toString() !== req.user._id.toString()) {
+               return res.status(401).json({ error: "Unauthorized to delete question" });
+          }
 
-		await Questions.findByIdAndDelete(req.params.id);
+          await Questions.findByIdAndDelete(req.params.id);
 
-		res.status(200).json({ message: "Question deleted successfully" });
-	} catch (err) {
-		res.status(500).json({ error: err.message });
-	}
+          res.status(200).json({ message: "Question deleted successfully" });
+     } catch (err) {
+          res.status(500).json({ error: err.message });
+     }
 };
 
 const addNote = async (req, res) => {
      try {
-         const { id } = req.params;
-         const { notes } = req.body;
- 
-         if (!notes) {
-             return res.status(400).json({ error: "Notes field is required" });
-         }
- 
-         const question = await Questions.findById(id);
- 
-         if (!question) {
-             return res.status(404).json({ error: "Question not found" });
-         }
- 
-         if (question.questionseBy.toString() !== req.user._id.toString()) {
-             return res.status(401).json({ error: "Unauthorized to add notes to this question" });
-         }
- 
-         question.notes = notes;
-         await question.save();
- 
-         res.status(200).json(question);
-     } catch (error) {
-         res.status(500).json({ error: error.message });
-     }
- };
+          const { id } = req.params;
+          const { notes } = req.body;
 
-const getUserQuestions = async (req,res) => {
-	const {username}=req.params;
-	try {
-		const user = await User.findOne({username});
-		if(!user)
-		{
-			return res.status(404).json({error:"User not found"});
-		}
-		const questions=await Questions.find({questionseBy:user._id}).sort({ createdAt: -1 });
-		res.status(200).json(questions);
-	} catch (error) {
-		
-	}
+          if (!notes) {
+               return res.status(400).json({ error: "Notes field is required" });
+          }
+
+          const question = await Questions.findById(id);
+
+          if (!question) {
+               return res.status(404).json({ error: "Question not found" });
+          }
+
+          if (question.questionseBy.toString() !== req.user._id.toString()) {
+               return res.status(401).json({ error: "Unauthorized to add notes to this question" });
+          }
+
+          question.notes = notes;
+          await question.save();
+
+          res.status(200).json(question);
+     } catch (error) {
+          res.status(500).json({ error: error.message });
+     }
+};
+
+const getUserQuestions = async (req, res) => {
+     const { username } = req.params;
+     try {
+          const user = await User.findOne({ username });
+          if (!user) {
+               return res.status(404).json({ error: "User not found" });
+          }
+          const questions = await Questions.find({ questionseBy: user._id }).sort({ createdAt: -1 });
+          res.status(200).json(questions);
+     } catch (error) {
+
+     }
 };
 
 const getQuestionTopics = async (req, res) => {
      try {
-         const {username} = req.params;
-         const user = await User.findOne({username});
-         if(!user)
-		{
-			return res.status(404).json({error:"User not found"});
-		}
-          const questions = await Questions.find({ questionseBy : user._id });
+          const { username } = req.params;
+          const user = await User.findOne({ username });
+          if (!user) {
+               return res.status(404).json({ error: "User not found" });
+          }
+          const questions = await Questions.find({ questionseBy: user._id });
           console.log(questions);
           const topicCounts = questions.reduce((acc, question) => {
                acc[question.questionTag] = (acc[question.questionTag] || 0) + 1;
                return acc;
-           }, {});
-           console.log(topicCounts);
-           const topicCountsArray = Object.keys(topicCounts).map(topic => ({
+          }, {});
+          console.log(topicCounts);
+          const topicCountsArray = Object.keys(topicCounts).map(topic => ({
                topic,
                count: topicCounts[topic]
-           }));
-           console.log(topicCountsArray);
-         res.json(topicCountsArray);
+          }));
+          console.log(topicCountsArray);
+          res.json(topicCountsArray);
      } catch (err) {
-         res.status(500).json({ error: 'Server error' });
+          res.status(500).json({ error: 'Server error' });
      }
- };
+};
 
-const getGenNot = async (req,res) => {
+const getGenNot = async (req, res) => {
      try {
           const { name, link } = req.body;
 
@@ -136,9 +134,9 @@ const getGenNot = async (req,res) => {
 
           const generatedNotes = await model.generateContent(prompt);
 
-          const genAiNot=generatedNotes.response.text();
+          const genAiNot = generatedNotes.response.text();
 
-          res.status(200).send({notes: genAiNot });
+          res.status(200).send({ notes: genAiNot });
      } catch (error) {
           res.status(500).json({ error: error.message });
      }
@@ -146,39 +144,40 @@ const getGenNot = async (req,res) => {
 
 const getRec = async (req, res) => {
      try {
-          const {username} = req.params;
+          const { username } = req.params;
           console.log(username);
           const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
 
           const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-          const user = await User.findOne({username});
-          if(!user)
-           {
-                return res.status(404).json({error:"User not found"});
-           }
-         // Fetch all questions for the user
-         const questions = await Questions.find({ questionseBy:user._id }).select('name link');
+          const user = await User.findOne({ username });
+          if (!user) {
+               return res.status(404).json({ error: "User not found" });
+          }
+          // Fetch all questions for the user
+          const questions = await Questions.find({ questionseBy: user._id }).select('name link questionTag');
 
-         console.log(questions);
-         
-         // Create a prompt to send to the AI model
-         const prompt = `
+          if (questions.length === 0) {
+               return res.status(404).json({ error: "No questions found for the user." });
+          }
+
+          // Create a prompt to send to the AI model
+          const prompt = `
          Below are the questions with there names, links and topics:
-         ${questions.map((q, index) => `${index + 1}. ${q.name}: ${q.link}`).join('\n')}
+         ${questions.map((q, index) => `${index + 1}. ${q.name}: ${q.link}, ${q.questionTag}`).join('\n')}
          I have practiced all this questions. Now suggested me exactly 3 questions different from this. Please only provide names of that questions. Each question should be separated by '||'.
          `;
 
-         console.log(prompt);
- 
-         const recommendations = await model.generateContent(prompt);
+          console.log(prompt);
 
-          const genRec=recommendations.response.text();
+          const recommendations = await model.generateContent(prompt);
+
+          const genRec = recommendations.response.text();
           console.log(genRec);
-         // Send the recommendations as a response
-         res.status(200).json(genRec);
+          // Send the recommendations as a response
+          res.status(200).json(genRec);
      } catch (error) {
-         res.status(500).json({ error: error.message });
+          res.status(500).json({ error: error.message });
      }
- };
+};
 
 export { createQuestion, deleteQuestion, addNote, getUserQuestions, getGenNot, getQuestionTopics, getRec };
