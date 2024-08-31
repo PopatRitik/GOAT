@@ -20,7 +20,7 @@ import useShowToast from "../hooks/useShowToast";
 import { Link as RouterLink } from "react-router-dom";
 import useGetUserProfile from "../hooks/getUserProfile.js"; // Import the hook to fetch user profile
 import ErrorPage from './Error_404.jsx'; // Import the error page component
-
+//small change done
 export default function UpdatePage() {
   const loggedInUser = useRecoilValue(userAtom);
   const [user, setUser] = useRecoilState(userAtom);
