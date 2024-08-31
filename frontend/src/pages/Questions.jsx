@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+// import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import {
   Box, Flex, Input, IconButton, Button, VStack, HStack, Text, Link,
   Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton,
   useDisclosure, Table, Thead, Tbody, Tr, Th, Td, Textarea, Container, useToast,
-  Spacer, Spinner, useBreakpointValue
+  Spacer, Spinner, useBreakpointValue, Select
 } from '@chakra-ui/react';
 import { FaUser, FaPlus, FaRandom, FaTrash, FaEdit, FaExternalLinkAlt } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { RiDashboard3Line } from "react-icons/ri";
+// import { useNavigate } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import userAtom from '../atoms/userAtom';
 import { Link as RouterLink } from "react-router-dom";
@@ -18,9 +20,14 @@ export default function Questions() {
   const [searchTerm, setSearchTerm] = useState('');
   const { isOpen: isAddOpen, onOpen: onAddOpen, onClose: onAddClose } = useDisclosure();
   const { isOpen: isNotesOpen, onOpen: onNotesOpen, onClose: onNotesClose } = useDisclosure();
-  const [newQuestion, setNewQuestion] = useState({ name: '', link: '' });
+  const [newQuestion, setNewQuestion] = useState({ name: '', link: '', questionTag: '' });
+  const questionTags = [
+    "Arrays", "Linked List", "Greedy Algorithm", "Recursion", "Backtracking",
+    "Binary Search", "Heaps", "Stack and Queue", "String", "Tree", "Graph",
+    "Dynamic Programming", "Trie", "Segment Tree", "Miscellaneous"
+  ];
   const [currentNotes, setCurrentNotes] = useState({ id: '', notes: '' });
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const toast = useToast();
   const user = useRecoilValue(userAtom);
   const userParam = useParams();
@@ -71,10 +78,11 @@ export default function Questions() {
         },
         body: JSON.stringify({ ...newQuestion, questionseBy: user._id }),
       });
+      console.log(res);
       const data = await res.json();
       if (res.ok) {
         setQuestions([data, ...questions]);
-        setNewQuestion({ name: '', link: '' });
+        setNewQuestion({ name: '', link: '', questionTag: '' });
         onAddClose();
         toast({
           title: "Success",
@@ -98,6 +106,7 @@ export default function Questions() {
       setIsAdding(false);
     }
   };
+
 
   const handleDeleteQuestion = async (id) => {
     try {
@@ -253,6 +262,18 @@ export default function Questions() {
                   Add
                 </Button>
               )}
+              {user.username === userParam.username && (
+                <Link as={RouterLink} to={`/${user.username}/dashboard`}>
+                <IconButton
+                  icon={<RiDashboard3Line />}
+                  bgGradient="linear(to-r, cyan.400, blue.500)"
+                  color="white"
+                  _hover={{ bgGradient: "linear(to-r, cyan.500, blue.600)" }}
+                  aria-label="User profile"
+                  size={isMobile ? "sm" : "md"}
+                />
+              </Link>
+              )}
               <Button
                 leftIcon={<FaRandom />}
                 onClick={handlePickRandom}
@@ -308,6 +329,7 @@ export default function Questions() {
                     <Tr>
                       <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Name</Th>
                       <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Link</Th>
+                      <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Tag</Th> {/* New column */}
                       {user.username === userParam.username && <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Notes</Th>}
                       {user.username === userParam.username && <Th color="cyan.100" sx={{ borderColor: 'transparent' }}>Actions</Th>}
                     </Tr>
@@ -324,6 +346,7 @@ export default function Questions() {
                             </HStack>
                           </Link>
                         </Td>
+                        <Td sx={{ borderColor: 'transparent' }}>{question.questionTag}</Td> {/* Display tag */}
                         {user.username === userParam.username && (
                           <Td sx={{ borderColor: 'transparent' }}>
                             <IconButton
@@ -357,6 +380,7 @@ export default function Questions() {
                       </Tr>
                     ))}
                   </Tbody>
+
                 </Table>
               </Box>
             )}
@@ -383,6 +407,21 @@ export default function Questions() {
                   onChange={(e) => setNewQuestion({ ...newQuestion, link: e.target.value })}
                   color={"white"}
                 />
+                <Select
+                  placeholder="Select question tag"
+                  value={newQuestion.questionTag}
+                  onChange={(e) => setNewQuestion({ ...newQuestion, questionTag: e.target.value })}
+                  color={"white"}
+                  bg="rgba(255,255,255,0.1)"
+                  _placeholder={{ color: "gray.300" }}
+                  borderColor="transparent"
+                  _hover={{ borderColor: "blue.300" }}
+                  _focus={{ borderColor: "blue.300", boxShadow: "0 0 0 1px #63B3ED" }}
+                >
+                  {questionTags.map((tag) => (
+                    <option key={tag} value={tag}>{tag}</option>
+                  ))}
+                </Select>
               </VStack>
             </ModalBody>
             <ModalFooter>

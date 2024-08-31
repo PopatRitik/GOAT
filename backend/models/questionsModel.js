@@ -16,11 +16,33 @@ const questionsSchema = mongoose.Schema(
 		notes: {
 			type: String,
 		},
+		questionTag: {
+			type: String,
+			enum: [
+				"Arrays",
+				"Linked List",
+				"Greedy Algorithm",
+				"Recursion",
+				"Backtracking",
+				"Binary Search",
+				"Heaps",
+				"Stack and Queue",
+				"String",
+				"Tree",
+				"Graph",
+				"Dynamic Programming",
+				"Trie",
+				"Segment Tree",
+				"Miscellaneous",
+			],
+			required: true,
+		},
 	},
 	{
 		timestamps: true,
 	}
 );
+
 
 const Questions = mongoose.model("questions", questionsSchema);
 

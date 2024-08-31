@@ -8,6 +8,7 @@ import User from "./pages/User";
 import Questions from "./pages/Questions";
 import userAtom from "./atoms/userAtom";
 import Error_404 from "./pages/Error_404";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   const user = useRecoilValue(userAtom);
@@ -21,6 +22,7 @@ function App() {
       <Route path='/:username/update' element={user ? <Update /> : <Navigate to='/' />} />
       <Route path='/:username' element={user ? <User /> : <Navigate to='/' />} />
       <Route path='/:username/questions' element={<Questions />} />
+      <Route path='/:username/dashboard' element={user ? <Dashboard /> : <Navigate to='/' />} />
       <Route path='/error' element={<Error_404 />} />
     </Routes>
   );
